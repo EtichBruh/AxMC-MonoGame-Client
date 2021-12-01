@@ -36,12 +36,8 @@ namespace attemp1st.GraphicsLogic
             CurrentFrame = frame;
             Origin = new Vector2((Texture.Width / Columns) * 0.5f, (Texture.Height / Rows) * 0.5f);
         }
-        public virtual void Update(GameTime gameTime, Camera camera, List<SpriteAtlas> sprites)
+        public virtual void Update(GameTime gameTime, Camera camera, Game1 game)
         {
-            foreach(var s in sprites)
-            {
-                sprites.RemoveAll(s => s.isRemoved = true);
-            }
         }
         public object Clone()
         {

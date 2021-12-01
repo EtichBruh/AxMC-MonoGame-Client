@@ -21,7 +21,7 @@ namespace attemp1st.player
             Size = 6;
         }
 
-        public override void Update(GameTime gameTime, Camera camera, List<SpriteAtlas> sprites)
+        public override void Update(GameTime gameTime, Camera camera, Game1 game)
         {
 
             LifeSpan -= (float)gameTime.ElapsedGameTime.TotalSeconds;

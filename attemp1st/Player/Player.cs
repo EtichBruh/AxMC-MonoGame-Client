@@ -29,10 +29,10 @@ namespace attemp1st.player
             //Layer = 0;
             Size = 10;
         }
-        public override void Update(GameTime gameTime, Camera camera, List<SpriteAtlas> sprites)
+        public override void Update(GameTime gameTime, Camera camera, Game1 game)
         {
             Move(gameTime, camera);
-            Shoot(sprites, camera);
+            Shoot(game, camera);
             Rotate(camera);
 
             if (Keyboard.GetState().IsKeyDown(Keys.OemMinus))
@@ -43,13 +43,9 @@ namespace attemp1st.player
             {
                 camera.Zoom += 0.01f;
             }
-
-            /*currentFrame++;
-            if (currentFrame >= totalFrames)
-                currentFrame -= MovingState;*/
         }
 
-        private void AddBullet(List<SpriteAtlas> sprites, Camera cam)
+        private void AddBullet(Game1 game, Camera cam)
         {
             var b = Bullet.Clone() as Bullet;
             b.Position = Position;
@@ -61,16 +57,15 @@ namespace attemp1st.player
             b.linearVelocity = 5;
             b.LifeSpan = 2;
             b.parent = this;
-
-            sprites.Add(b);
+            game._sprites.Add(b);
         }
-        private void Shoot(List<SpriteAtlas> sprites, Camera c)
+        private void Shoot(Game1 game, Camera c)
         {
             previousKey = currentKey;
             currentKey = Mouse.GetState();
             if ((currentKey.LeftButton == ButtonState.Pressed))
             {
-                AddBullet(sprites,c);
+                AddBullet(game, c);
             }
         }
         private void Move(GameTime gameTime, Camera camera)

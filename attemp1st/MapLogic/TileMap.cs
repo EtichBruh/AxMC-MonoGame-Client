@@ -11,7 +11,7 @@ namespace attemp1st.MapLogic
     public class TileMap
     {
         public TileMap() { }
-        public void MapLoad(int[,] map, List<SpriteAtlas> sprites)
+        public void MapLoad(int[,] map, Game1 game)
         {
             for (int x = 0; x < map.GetLength(1); x++)
                 for (int y = 0; y < map.GetLength(0); y++)
@@ -19,7 +19,7 @@ namespace attemp1st.MapLogic
                     int number = map[y, x];
                     if (number > -1)
                     {
-                        sprites.Add(new Tile(number, new Vector2(x, y)));
+                        game._sprites.Add(new Tile(number, new Vector2(x, y)));
                     }
                     
                 }

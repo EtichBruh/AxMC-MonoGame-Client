@@ -17,7 +17,7 @@ namespace attemp1st
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         private SpriteFont Arial;
-        private List<SpriteAtlas> _sprites;
+        public List<SpriteAtlas> _sprites;
         //private Connection connection;
         readonly Random rand = new();
         public static Vector2 WindowCenter;
@@ -124,7 +124,7 @@ namespace attemp1st
                 {1, 0, 0, 0, 2, 2, 0, 2, 2, 0, 1, 0, 1, 0, 2,-1, 2, 0, 0, 0, 0, 0 },
                 {1, 0, 0, 0, 2, 0, 2, 0, 2, 0, 1, 1, 1, 0, 1,-1, 1, 0, 0, 0, 0, 0 },
                 {1, 1, 1, 0, 2, 0, 0, 0, 2, 0, 1, 0, 1, 0, 0, 2, 0, 0, 0, 0, 0, 0 },
-            }, _sprites);
+            }, this);
             _sprites.Add(Player);
 
 
@@ -138,11 +138,11 @@ namespace attemp1st
             //WindowCenter = new Vector2(GraphicsDevice.Viewport.Width * 0.5f, GraphicsDevice.Viewport.Height * 0.5f);
             _camera.View = GraphicsDevice.Viewport;
             // TODO: Add your update logic here
-            foreach (var sprites in _sprites.ToArray())
+            foreach (var sprites in _sprites)
             {
-                _sprites.RemoveAll(sprites => sprites.isRemoved);
-                sprites.Update(gameTime, _camera, _sprites);
+                sprites.Update(gameTime, _camera, this);
             }
+            _sprites.RemoveAll(sprites => sprites.isRemoved);
 
             _camera.Follow(Player);
             base.Update(gameTime);
