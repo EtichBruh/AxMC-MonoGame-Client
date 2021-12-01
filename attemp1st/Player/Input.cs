@@ -10,7 +10,7 @@ namespace attemp1st.player
         public Keys Up { get; set; }
         public Keys RotateLeft { get; set; }
         public Keys RotateRight { get; set; }
-        public ButtonState leftClick { get; }
+        public ButtonState LeftClick { get; }
         protected KeyboardState currentState;
         protected KeyboardState previousState;
 

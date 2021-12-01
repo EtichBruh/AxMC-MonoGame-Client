@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 
 namespace attemp1st.player
@@ -31,7 +32,7 @@ namespace attemp1st.player
         public override void Update(GameTime gameTime, Camera camera, List<SpriteAtlas> sprites)
         {
             Move(gameTime, camera);
-            Shoot(sprites);
+            Shoot(sprites, camera);
             Rotate(camera);
 
             if (Keyboard.GetState().IsKeyDown(Keys.OemMinus))
@@ -48,29 +49,28 @@ namespace attemp1st.player
                 currentFrame -= MovingState;*/
         }
 
-        private void AddBullet(List<SpriteAtlas> sprites)
+        private void AddBullet(List<SpriteAtlas> sprites, Camera cam)
         {
             var b = Bullet.Clone() as Bullet;
-            var mPos = new Vector2(Mouse.GetState().X, Mouse.GetState().Y);
             b.Position = Position;
-            b.Direction = mPos - Game1.WindowCenter;
+            b.Direction = Vector2.Transform(new Vector2(currentKey.X, currentKey.Y), Matrix.Invert(cam.Transform)) - b.Position;
             if (b.Direction != Vector2.Zero)
-                b.Direction = new Vector2(MathF.Cos(MathF.Atan2(b.Direction.Y, b.Direction.X) + Rotation),
-                    MathF.Sin(MathF.Atan2(b.Direction.Y, b.Direction.X) + Rotation));
-            b.Rotation = MathF.Atan2(b.Direction.Y, b.Direction.X) + MathF.PI / 0.45f;
+                b.Direction = new Vector2(MathF.Cos(MathF.Atan2(b.Direction.Y, b.Direction.X)),
+                    MathF.Sin(MathF.Atan2(b.Direction.Y, b.Direction.X)));
+            b.Rotation = MathF.Atan2(b.Direction.Y, b.Direction.X) + MathF.Atan(0.9f);
             b.linearVelocity = 5;
             b.LifeSpan = 2;
             b.parent = this;
 
             sprites.Add(b);
         }
-        private void Shoot(List<SpriteAtlas> sprites)
+        private void Shoot(List<SpriteAtlas> sprites, Camera c)
         {
             previousKey = currentKey;
             currentKey = Mouse.GetState();
-            if ((currentKey.LeftButton == ButtonState.Pressed) && (previousKey.LeftButton == ButtonState.Released))
+            if ((currentKey.LeftButton == ButtonState.Pressed))
             {
-                AddBullet(sprites);
+                AddBullet(sprites,c);
             }
         }
         private void Move(GameTime gameTime, Camera camera)

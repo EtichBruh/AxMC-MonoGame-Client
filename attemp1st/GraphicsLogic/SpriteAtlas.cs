@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 
 namespace attemp1st.GraphicsLogic
@@ -37,6 +38,10 @@ namespace attemp1st.GraphicsLogic
         }
         public virtual void Update(GameTime gameTime, Camera camera, List<SpriteAtlas> sprites)
         {
+            foreach(var s in sprites)
+            {
+                sprites.RemoveAll(s => s.isRemoved = true);
+            }
         }
         public object Clone()
         {

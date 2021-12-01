@@ -1,10 +1,12 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace attemp1st.GraphicsLogic
 {
     public class Camera
     {
-        public Matrix Transform { get; private set; }
+        public Matrix Transform { get; set; }
+        public Viewport View { get; set; }
         public float RotationDegrees = 0;
         public float Zoom = 1f;
 
@@ -12,14 +14,11 @@ namespace attemp1st.GraphicsLogic
 
 
         public void Follow(SpriteAtlas target)
-        {
-            var WindowCenter = Game1.WindowCenter;
-            var position = Matrix.CreateTranslation(new Vector3(-target.Position.X, -target.Position.Y, 0))
-                * Matrix.CreateRotationZ(RotationDegrees)
-                * Matrix.CreateScale(Zoom_);
-            var offset = Matrix.CreateTranslation(new Vector3(WindowCenter.X, WindowCenter.Y, 0));
-
-            Transform = position * offset;
+        {   //var offset = Matrix.CreateTranslation(new Vector3(WindowCenter.X, WindowCenter.Y, 0));
+            Transform = Matrix.CreateTranslation(-target.Position.X, -target.Position.Y, 0)
+            * Matrix.CreateScale(Zoom_, Zoom_, 1)
+            * Matrix.CreateRotationZ(RotationDegrees)
+            * Matrix.CreateTranslation(View.Width * 0.5f, View.Height * 0.5f, 0);
         }
     }
 }
