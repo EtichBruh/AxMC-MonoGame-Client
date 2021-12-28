@@ -12,7 +12,7 @@ namespace attemp1st.Networking
     public class Connection
     {
 
-        public Connection() { } // Currently outdated + neeed rewrite all code, allow requesting images, json etc.. also streamD
+        public Connection() { } // Currently outdated + need to use tcp instead http + need rewrite all code, allow requesting images, json etc.. also streamD
         public async Task Connect(Player _player)
         {
 

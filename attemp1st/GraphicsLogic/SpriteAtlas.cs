@@ -1,59 +1,54 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 
 namespace attemp1st.GraphicsLogic
 {
-    public class SpriteAtlas : ICloneable
+    public class SpriteAtlas// : ICloneable
     {
-        protected Texture2D Texture { get; set; }
+        public Texture2D Texture { get; set; }
+        public SpriteAtlas parent;
         public Vector2 Direction;
         public Vector2 Position;
         public Vector2 Origin;
-        public Rectangle rectangle;
-
         public bool isRemoved = false;
-        public int Rows { get; set; }
-        public int Columns { get; set; }
-        public int MovingState { get; set; }
+        //private int _columns { get; set; }
+        //public int MovingState { get; set; }
         public int Size { get; set; }
         public float Rotation { get; set; }
-        public SpriteAtlas parent;
         public int CurrentFrame { set; get; }
-        public int TotalFrames { get; set; }
-        public int Layer { get; set; }
-
+        //public int TotalFrames { get; set; }
+        private int width { get; set; }
+        private int height { get; set; }
+        public int Width,Height = 1;
         public SpriteEffects Effect;
-
-
         public SpriteAtlas(Texture2D spritesheet, int rows, int columns, int frame)
         {
-            Texture = spritesheet;
-            Rows = rows;
-            Columns = columns;
+            width = spritesheet.Width / columns;
+            height = spritesheet.Height / rows;
+            //_columns = columns;
             CurrentFrame = frame;
-            Origin = new Vector2((Texture.Width / Columns) * 0.5f, (Texture.Height / Rows) * 0.5f);
+            Origin = new(width * 0.5f, height * 0.5f);
+            Texture = Slice(spritesheet, width * (CurrentFrame % columns), height * (CurrentFrame / columns));
+
         }
-        public virtual void Update(GameTime gameTime, Camera camera, Game1 game)
-        {
-        }
+        public virtual void Update(GameTime gameTime, Camera camera, List<SpriteAtlas> spritesToAdd) { }
         public object Clone()
         {
             return MemberwiseClone();
         }
-        public void Draw(SpriteBatch spritebatch, Vector2 location)
+        private Texture2D Slice(Texture2D org, int x, int y) // x is position on sprite sheet, same as y
         {
-            int width = Texture.Width / Columns; //Texture.Width / Columns
-            int height = Texture.Height / Rows; //Texture.Height / Rows
-            int row = CurrentFrame / Columns;
-            int column = CurrentFrame % Columns;
-            Rectangle destinationRectangle = new((int)location.X, (int)location.Y, width * Size, height * Size);
-
-            Rectangle sourceRect = new(width * column, height * row, width, height);
-            rectangle = destinationRectangle;
-            spritebatch.Draw(Texture, destinationRectangle, sourceRect, Color.White, Rotation, Origin, Effect, 0);
+            Texture2D tex = new(org.GraphicsDevice, width, height);
+            var data = new Color[width * height];
+            org.GetData(0, new(x, y, width, height), data, 0, data.Length);
+            tex.SetData(data);
+            return tex;
+        }
+        public void Draw(SpriteBatch spritebatch)
+        {
+            spritebatch.Draw(Texture, new((int)Position.X, (int)Position.Y, Width, Height), null, Color.White, Rotation, Origin, Effect, 1);
         }
     }
 }

@@ -6,22 +6,37 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
+using Keys = Microsoft.Xna.Framework.Input.Keys;
+
+//using System.Linq;
 
 namespace attemp1st
 {
     public class Game1 : Game
     {
         private Camera _camera;
-        private TileMap Map;
+        //private TileMap _map;
+        private Block _block;
         private Player Player { get; set; }
+        private Vector3 _cameraPos = new(0f, 0f, 2);
+        Matrix _projectionMatrix;
+        Matrix _viewMatrix;
+        Matrix _worldMatrix;
+        private Effect _outline;
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
-        private SpriteFont Arial;
-        public List<SpriteAtlas> _sprites;
+        private SpriteFont _arial;
+        private List<SpriteAtlas> _sprites;
+        public List<SpriteAtlas> SpritesToAdd;
+
+        public Tile[] Tiles;
         //private Connection connection;
-        readonly Random rand = new();
-        public static Vector2 WindowCenter;
-        private readonly string[] WindowNameAddition = new string[] { "Damn sussy", "Yey finnaly exist", "Thanks for playing flash ver", "Also try minecraft", "When the impostor is sus" };
+        readonly Random _rand = new();
+        //public static Vector2 WindowCenter;
+        private readonly string[] _windowNameAddition = { "Damn sussy", "Yey finnaly exist", "Thanks for playing flash ver", "Also try minecraft", "When the impostor is sus" };
 
 
         public Game1()
@@ -30,7 +45,9 @@ namespace attemp1st
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
             Window.AllowUserResizing = true;
-            Window.Title = "AMC Realms: " + WindowNameAddition.GetValue(rand.Next(1, WindowNameAddition.Length));
+            Window.Title = "AMC Realms: " + _windowNameAddition[_rand.Next(0, _windowNameAddition.Length)];
+            //_graphics.SynchronizeWithVerticalRetrace = false;
+            //IsFixedTimeStep = false;
         }
 
 
@@ -38,9 +55,19 @@ namespace attemp1st
         {
 
             // TODO: Add your initialization logic here
+            _block = new();
+
+            SpritesToAdd = new();
+            _block.BlockInit(_graphics.GraphicsDevice);
             _sprites = new();
-            Map = new();
-            Arial = Content.Load<SpriteFont>("Arial");
+            //_map = new();
+            _arial = Content.Load<SpriteFont>("Arial");
+            _viewMatrix = Matrix.CreateLookAt(_cameraPos, Vector3.Forward, Vector3.Up);
+
+            _projectionMatrix = Matrix.CreateOrthographic( GraphicsDevice.Viewport.Width /50f, GraphicsDevice.Viewport.Height/50f, 0f, 100f);
+
+            _worldMatrix = Matrix.CreateWorld(new(0, 0, 0), Vector3.Forward, Vector3.Up);
+
 
             //connection = new Connection();
 
@@ -54,13 +81,64 @@ namespace attemp1st
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            Texture2D playerTexture = Content.Load<Texture2D>("CrewMateMASK");
-            Texture2D BulletTexture = Content.Load<Texture2D>("bullet");
+            _outline = Content.Load<Effect>("outline");
+
+            //outline.Parameters["outlineColor"].SetValue(new Vector4(0f, 0f, 0f, 1.0f));
             TileData.Tileset = Content.Load<Texture2D>("MCRTile");
+            TileMap.MapLoad(new[,] {
+                {1, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 },
+                {1, 0, 0, 0, 2, 2, 0, 2, 2, 0, 1, 0, 1, 0, 2,-1, 2, 0, 0, 0, 0, 0 },
+                {1, 0, 0, 0, 2, 0, 2, 0, 2, 0, 1, 1, 1, 0, 1,-1, 1, 0, 0, 0, 0, 0 },
+                {1, 1, 1, 0, 2, 0, 0, 0, 2, 0, 1, 0, 1, 0, 0, 2, 0, 0, 0, 0, 0, 0 },
+                {1, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 },
+                {1, 0, 0, 0, 2, 2, 0, 2, 2, 0, 1, 0, 1, 0, 2,-1, 2, 0, 0, 0, 0, 0 },
+                {1, 0, 0, 0, 2, 0, 2, 0, 2, 0, 1, 1, 1, 0, 1,-1, 1, 0, 0, 0, 0, 0 },
+                {1, 1, 1, 0, 2, 0, 0, 0, 2, 0, 1, 0, 1, 0, 0, 2, 0, 0, 0, 0, 0, 0 },
+                {1, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 },
+                {1, 0, 0, 0, 2, 2, 0, 2, 2, 0, 1, 0, 1, 0, 2,-1, 2, 0, 0, 0, 0, 0 },
+                {1, 0, 0, 0, 2, 0, 2, 0, 2, 0, 1, 1, 1, 0, 1,-1, 1, 0, 0, 0, 0, 0 },
+                {1, 1, 1, 0, 2, 0, 0, 0, 2, 0, 1, 0, 1, 0, 0, 2, 0, 0, 0, 0, 0, 0 },
+                {1, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 },
+                {1, 0, 0, 0, 2, 2, 0, 2, 2, 0, 1, 0, 1, 0, 2,-1, 2, 0, 0, 0, 0, 0 },
+                {1, 0, 0, 0, 2, 0, 2, 0, 2, 0, 1, 1, 1, 0, 1,-1, 1, 0, 0, 0, 0, 0 },
+                {1, 1, 1, 0, 2, 0, 0, 0, 2, 0, 1, 0, 1, 0, 0, 2, 0, 0, 0, 0, 0, 0 },
+                {1, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 },
+                {1, 0, 0, 0, 2, 2, 0, 2, 2, 0, 1, 0, 1, 0, 2,-1, 2, 0, 0, 0, 0, 0 },
+                {1, 0, 0, 0, 2, 0, 2, 0, 2, 0, 1, 1, 1, 0, 1,-1, 1, 0, 0, 0, 0, 0 },
+                {1, 1, 1, 0, 2, 0, 0, 0, 2, 0, 1, 0, 1, 0, 0, 2, 0, 0, 0, 0, 0, 0 },
+                {1, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 },
+                {1, 0, 0, 0, 2, 2, 0, 2, 2, 0, 1, 0, 1, 0, 2,-1, 2, 0, 0, 0, 0, 0 },
+                {1, 0, 0, 0, 2, 0, 2, 0, 2, 0, 1, 1, 1, 0, 1,-1, 1, 0, 0, 0, 0, 0 },
+                {1, 1, 1, 0, 2, 0, 0, 0, 2, 0, 1, 0, 1, 0, 0, 2, 0, 0, 0, 0, 0, 0 },
+                {1, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 },
+                {1, 0, 0, 0, 2, 2, 0, 2, 2, 0, 1, 0, 1, 0, 2,-1, 2, 0, 0, 0, 0, 0 },
+                {1, 0, 0, 0, 2, 0, 2, 0, 2, 0, 1, 1, 1, 0, 1,-1, 1, 0, 0, 0, 0, 0 },
+                {1, 1, 1, 0, 2, 0, 0, 0, 2, 0, 1, 0, 1, 0, 0, 2, 0, 0, 0, 0, 0, 0 },
+                {1, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 },
+                {1, 0, 0, 0, 2, 2, 0, 2, 2, 0, 1, 0, 1, 0, 2,-1, 2, 0, 0, 0, 0, 0 },
+                {1, 0, 0, 0, 2, 0, 2, 0, 2, 0, 1, 1, 1, 0, 1,-1, 1, 0, 0, 0, 0, 0 },
+                {1, 1, 1, 0, 2, 0, 0, 0, 2, 0, 1, 0, 1, 0, 0, 2, 0, 0, 0, 0, 0, 0 },
+                {1, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 },
+                {1, 0, 0, 0, 2, 2, 0, 2, 2, 0, 1, 0, 1, 0, 2,-1, 2, 0, 0, 0, 0, 0 },
+                {1, 0, 0, 0, 2, 0, 2, 0, 2, 0, 1, 1, 1, 0, 1,-1, 1, 0, 0, 0, 0, 0 },
+                {1, 1, 1, 0, 2, 0, 0, 0, 2, 0, 1, 0, 1, 0, 0, 2, 0, 0, 0, 0, 0, 0 },
+                {1, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 },
+                {1, 0, 0, 0, 2, 2, 0, 2, 2, 0, 1, 0, 1, 0, 2,-1, 2, 0, 0, 0, 0, 0 },
+                {1, 0, 0, 0, 2, 0, 2, 0, 2, 0, 1, 1, 1, 0, 1,-1, 1, 0, 0, 0, 0, 0 },
+                {1, 1, 1, 0, 2, 0, 0, 0, 2, 0, 1, 0, 1, 0, 0, 2, 0, 0, 0, 0, 0, 0 },
+                {1, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 },
+                {1, 0, 0, 0, 2, 2, 0, 2, 2, 0, 1, 0, 1, 0, 2,-1, 2, 0, 0, 0, 0, 0 },
+                {1, 0, 0, 0, 2, 0, 2, 0, 2, 0, 1, 1, 1, 0, 1,-1, 1, 0, 0, 0, 0, 0 },
+                {1, 1, 1, 0, 2, 0, 0, 0, 2, 0, 1, 0, 1, 0, 0, 2, 0, 0, 0, 0, 0, 0 },
+                {1, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 },
+                {1, 0, 0, 0, 2, 2, 0, 2, 2, 0, 1, 0, 1, 0, 2,-1, 2, 0, 0, 0, 0, 0 },
+                {1, 0, 0, 0, 2, 0, 2, 0, 2, 0, 1, 1, 1, 0, 1,-1, 1, 0, 0, 0, 0, 0 },
+                {1, 1, 1, 0, 2, 0, 0, 0, 2, 0, 1, 0, 1, 0, 0, 2, 0, 0, 0, 0, 0, 0 },
+            }, ref Tiles);
             _camera = new Camera();
-            Player = new Player(playerTexture)
+            Player = new Player(Content.Load<Texture2D>("CrewMateMASK"))
             {
-                Input = new Input()
+                Input = new Input
                 {
                     Left = Keys.A,
                     Down = Keys.S,
@@ -70,79 +148,64 @@ namespace attemp1st
                     RotateRight = Keys.E
                 }
                     ,
-                Position = new Vector2(100, 100)
-                    ,
-                Bullet = new Bullet(BulletTexture)
-
+                Position = new Vector2(100, 100),
+                Bullet = new(Content.Load<Texture2D>("bullet"))
             };
-            Map.MapLoad(new int[,] {
-                {1, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 },
-                {1, 0, 0, 0, 2, 2, 0, 2, 2, 0, 1, 0, 1, 0, 2,-1, 2, 0, 0, 0, 0, 0 },
-                {1, 0, 0, 0, 2, 0, 2, 0, 2, 0, 1, 1, 1, 0, 1,-1, 1, 0, 0, 0, 0, 0 },
-                {1, 1, 1, 0, 2, 0, 0, 0, 2, 0, 1, 0, 1, 0, 0, 2, 0, 0, 0, 0, 0, 0 },
-                {1, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 },
-                {1, 0, 0, 0, 2, 2, 0, 2, 2, 0, 1, 0, 1, 0, 2,-1, 2, 0, 0, 0, 0, 0 },
-                {1, 0, 0, 0, 2, 0, 2, 0, 2, 0, 1, 1, 1, 0, 1,-1, 1, 0, 0, 0, 0, 0 },
-                {1, 1, 1, 0, 2, 0, 0, 0, 2, 0, 1, 0, 1, 0, 0, 2, 0, 0, 0, 0, 0, 0 },
-                {1, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 },
-                {1, 0, 0, 0, 2, 2, 0, 2, 2, 0, 1, 0, 1, 0, 2,-1, 2, 0, 0, 0, 0, 0 },
-                {1, 0, 0, 0, 2, 0, 2, 0, 2, 0, 1, 1, 1, 0, 1,-1, 1, 0, 0, 0, 0, 0 },
-                {1, 1, 1, 0, 2, 0, 0, 0, 2, 0, 1, 0, 1, 0, 0, 2, 0, 0, 0, 0, 0, 0 },
-                {1, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 },
-                {1, 0, 0, 0, 2, 2, 0, 2, 2, 0, 1, 0, 1, 0, 2,-1, 2, 0, 0, 0, 0, 0 },
-                {1, 0, 0, 0, 2, 0, 2, 0, 2, 0, 1, 1, 1, 0, 1,-1, 1, 0, 0, 0, 0, 0 },
-                {1, 1, 1, 0, 2, 0, 0, 0, 2, 0, 1, 0, 1, 0, 0, 2, 0, 0, 0, 0, 0, 0 },
-                {1, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 },
-                {1, 0, 0, 0, 2, 2, 0, 2, 2, 0, 1, 0, 1, 0, 2,-1, 2, 0, 0, 0, 0, 0 },
-                {1, 0, 0, 0, 2, 0, 2, 0, 2, 0, 1, 1, 1, 0, 1,-1, 1, 0, 0, 0, 0, 0 },
-                {1, 1, 1, 0, 2, 0, 0, 0, 2, 0, 1, 0, 1, 0, 0, 2, 0, 0, 0, 0, 0, 0 },
-                {1, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 },
-                {1, 0, 0, 0, 2, 2, 0, 2, 2, 0, 1, 0, 1, 0, 2,-1, 2, 0, 0, 0, 0, 0 },
-                {1, 0, 0, 0, 2, 0, 2, 0, 2, 0, 1, 1, 1, 0, 1,-1, 1, 0, 0, 0, 0, 0 },
-                {1, 1, 1, 0, 2, 0, 0, 0, 2, 0, 1, 0, 1, 0, 0, 2, 0, 0, 0, 0, 0, 0 },
-                {1, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 },
-                {1, 0, 0, 0, 2, 2, 0, 2, 2, 0, 1, 0, 1, 0, 2,-1, 2, 0, 0, 0, 0, 0 },
-                {1, 0, 0, 0, 2, 0, 2, 0, 2, 0, 1, 1, 1, 0, 1,-1, 1, 0, 0, 0, 0, 0 },
-                {1, 1, 1, 0, 2, 0, 0, 0, 2, 0, 1, 0, 1, 0, 0, 2, 0, 0, 0, 0, 0, 0 },
-                {1, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 },
-                {1, 0, 0, 0, 2, 2, 0, 2, 2, 0, 1, 0, 1, 0, 2,-1, 2, 0, 0, 0, 0, 0 },
-                {1, 0, 0, 0, 2, 0, 2, 0, 2, 0, 1, 1, 1, 0, 1,-1, 1, 0, 0, 0, 0, 0 },
-                {1, 1, 1, 0, 2, 0, 0, 0, 2, 0, 1, 0, 1, 0, 0, 2, 0, 0, 0, 0, 0, 0 },
-                {1, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 },
-                {1, 0, 0, 0, 2, 2, 0, 2, 2, 0, 1, 0, 1, 0, 2,-1, 2, 0, 0, 0, 0, 0 },
-                {1, 0, 0, 0, 2, 0, 2, 0, 2, 0, 1, 1, 1, 0, 1,-1, 1, 0, 0, 0, 0, 0 },
-                {1, 1, 1, 0, 2, 0, 0, 0, 2, 0, 1, 0, 1, 0, 0, 2, 0, 0, 0, 0, 0, 0 },
-                {1, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 },
-                {1, 0, 0, 0, 2, 2, 0, 2, 2, 0, 1, 0, 1, 0, 2,-1, 2, 0, 0, 0, 0, 0 },
-                {1, 0, 0, 0, 2, 0, 2, 0, 2, 0, 1, 1, 1, 0, 1,-1, 1, 0, 0, 0, 0, 0 },
-                {1, 1, 1, 0, 2, 0, 0, 0, 2, 0, 1, 0, 1, 0, 0, 2, 0, 0, 0, 0, 0, 0 },
-                {1, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 },
-                {1, 0, 0, 0, 2, 2, 0, 2, 2, 0, 1, 0, 1, 0, 2,-1, 2, 0, 0, 0, 0, 0 },
-                {1, 0, 0, 0, 2, 0, 2, 0, 2, 0, 1, 1, 1, 0, 1,-1, 1, 0, 0, 0, 0, 0 },
-                {1, 1, 1, 0, 2, 0, 0, 0, 2, 0, 1, 0, 1, 0, 0, 2, 0, 0, 0, 0, 0, 0 },
-                {1, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 },
-                {1, 0, 0, 0, 2, 2, 0, 2, 2, 0, 1, 0, 1, 0, 2,-1, 2, 0, 0, 0, 0, 0 },
-                {1, 0, 0, 0, 2, 0, 2, 0, 2, 0, 1, 1, 1, 0, 1,-1, 1, 0, 0, 0, 0, 0 },
-                {1, 1, 1, 0, 2, 0, 0, 0, 2, 0, 1, 0, 1, 0, 0, 2, 0, 0, 0, 0, 0, 0 },
-            }, this);
-            _sprites.Add(Player);
+
+            _outline.Parameters["uvPix"].SetValue(new Vector2(Player.Width,Player.Height));
+            
+            SpritesToAdd.Add(Player);
 
 
             // TODO: use this.Content to load your game content here
         }
-
+        protected override void UnloadContent()
+        {
+        }
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-            //WindowCenter = new Vector2(GraphicsDevice.Viewport.Width * 0.5f, GraphicsDevice.Viewport.Height * 0.5f);
+
             _camera.View = GraphicsDevice.Viewport;
-            // TODO: Add your update logic here
-            foreach (var sprites in _sprites)
+            Window.Title = (1000f / (float)gameTime.ElapsedGameTime.TotalMilliseconds).ToString(CultureInfo.CurrentCulture);
+            if (Keyboard.GetState().IsKeyDown(Keys.Up))
             {
-                sprites.Update(gameTime, _camera, this);
+                _worldMatrix *= Matrix.CreateRotationY(-1 * MathHelper.ToRadians(1));
+
             }
-            _sprites.RemoveAll(sprites => sprites.isRemoved);
+            if (Keyboard.GetState().IsKeyDown(Keys.Down))
+            {
+                _worldMatrix *= Matrix.CreateRotationY(MathHelper.ToRadians(1));
+
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.Left))
+            {
+                _worldMatrix *= Matrix.CreateRotationX(MathHelper.ToRadians(1));
+
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.Right))
+            {
+                _worldMatrix *= Matrix.CreateRotationX(-1 * MathHelper.ToRadians(1));
+
+            }
+            //CameraPos = new(Mouse.GetState().X * 2f, Mouse.GetState().Y * 2f, CameraPos.Z);
+            if (SpritesToAdd.Count > 0)
+            {
+                SpritesToAdd.ForEach(toAdd => _sprites.Add(toAdd));
+                SpritesToAdd.Clear();
+            }
+
+            for (int i = 0; i < _sprites.Count; i++)
+            {
+                _sprites[i].Update(gameTime, _camera, SpritesToAdd);
+                if (!_sprites[i].isRemoved) continue;
+                _sprites.RemoveAt(i);
+                i--;
+            }
+            //_sprites.RemoveAll(sprites => sprites.isRemoved);
+
+            //_sprites.ForEach(action => action.Update(gameTime, _camera, spritesToAdd));
 
             _camera.Follow(Player);
             base.Update(gameTime);
@@ -154,23 +217,31 @@ namespace attemp1st
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            _spriteBatch.Begin(transformMatrix: _camera.Transform, samplerState: SamplerState.PointClamp);
-
-
-            //Map.Draw(_spriteBatch);
-
-            // TODO: Add your drawing code here
-            foreach (var sprite in _sprites)
+            _spriteBatch.Begin(effect:_outline,  transformMatrix: _camera.Transform, samplerState: SamplerState.PointClamp, blendState: BlendState.AlphaBlend);
+            for (int i = 0; i < Tiles.Length; i++)
             {
-                sprite.Draw(_spriteBatch, sprite.Position);
+                //if (Tiles[i] == null) continue;
+                _spriteBatch.Draw(Tiles[i].Texture, new Rectangle((int)Tiles[i].Position.X, (int)Tiles[i].Position.Y, Tiles[i].Width, Tiles[i].Height), Color.White);
             }
-            _spriteBatch.DrawString(Arial, new string($"X:{Player.Position.X}, Y:{Player.Position.Y}"), new Vector2(Player.Position.X - 76, Player.Position.Y - 40), Color.Red);
-
+            foreach (var t in _sprites)
+            {
+                //var e =;
+                t.Draw(_spriteBatch);
+            }
+            _spriteBatch.DrawString(_arial, new string(" a"), new(Player.Position.X - Player.Texture.Width * Player.Size, Player.Position.Y - Player.Texture.Height * Player.Size), Color.Black);
 
             _spriteBatch.End();
-
-            //player.Draw(_spriteBatch);
-
+            
+            _block.BasiceCubeEff.View = _viewMatrix;
+            _block.BasiceCubeEff.Projection = _projectionMatrix;
+            _block.BasiceCubeEff.World = _worldMatrix;
+            GraphicsDevice.SetVertexBuffer(_block.VertexBuffer);
+            GraphicsDevice.Indices = _block.IndexBuffer;
+            foreach (EffectPass pass in _block.BasiceCubeEff.CurrentTechnique.Passes)
+            {
+                pass.Apply();
+                GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, 12);
+            }
             base.Draw(gameTime);
         }
 

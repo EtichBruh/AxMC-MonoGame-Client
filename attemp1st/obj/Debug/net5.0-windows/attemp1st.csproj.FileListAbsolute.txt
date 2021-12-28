@@ -41,3 +41,7 @@ C:\Users\я\source\repos\attemp1st\attemp1st\obj\Debug\net5.0-windows\attemp1st.
 C:\Users\я\source\repos\attemp1st\attemp1st\obj\Debug\net5.0-windows\attemp1st.genruntimeconfig.cache
 C:\Users\я\source\repos\attemp1st\attemp1st\bin\Debug\net5.0-windows\Content\MCRTile.xnb
 C:\Users\я\source\repos\attemp1st\attemp1st\bin\Debug\net5.0-windows\Content\Arial.xnb
+C:\Users\я\source\repos\attemp1st\attemp1st\bin\Debug\net5.0-windows\Content\outline.xnb
+C:\Users\я\source\repos\attemp1st\attemp1st\bin\Debug\net5.0-windows\MonoGame.Extended.dll
+C:\Users\я\source\repos\attemp1st\attemp1st\bin\Debug\net5.0-windows\MonoGame.Extended.Collisions.dll
+C:\Users\я\source\repos\attemp1st\attemp1st\bin\Debug\net5.0-windows\Newtonsoft.Json.dll

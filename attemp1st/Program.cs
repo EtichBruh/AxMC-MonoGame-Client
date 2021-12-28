@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows.Forms;
 
 namespace attemp1st
 {
@@ -7,12 +8,8 @@ namespace attemp1st
         [STAThread]
         private static void Main()
         {
-
-            using (var game = new Game1())
-            {
-                game.Run();
-            }
-
+            using var game = new Game1();
+            game.Run();
         }
     }
 }

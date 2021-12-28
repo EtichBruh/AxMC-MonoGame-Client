@@ -1,5 +1,6 @@
 Source File,Dest File,Processor Type,Content Type,Source File Size,Dest File Size,Build Seconds
-"C:/Users/я/source/repos/attemp1st/attemp1st/Content/bullet.png","C:/Users/я/source/repos/attemp1st/attemp1st/Content/bin/Windows/bullet.xnb","TextureProcessor","Texture2DContent",619,341,0,688739
-"C:/Users/я/source/repos/attemp1st/attemp1st/Content/CrewMateMASK.png","C:/Users/я/source/repos/attemp1st/attemp1st/Content/bin/Windows/CrewMateMASK.xnb","TextureProcessor","Texture2DContent",17723,4945,0,0229407
-"C:/Users/я/source/repos/attemp1st/attemp1st/Content/File.spritefont","C:/Users/я/source/repos/attemp1st/attemp1st/Content/bin/Windows/Arial.xnb","FontDescriptionProcessor","SpriteFontContent",2008,21538,0,7404503
-"C:/Users/я/source/repos/attemp1st/attemp1st/Content/MCRTile.png","C:/Users/я/source/repos/attemp1st/attemp1st/Content/bin/Windows/MCRTile.xnb","TextureProcessor","Texture2DContent",2289,3157,0,0818258
+"C:/Users/я/source/repos/attemp1st/attemp1st/Content/bullet.png","C:/Users/я/source/repos/attemp1st/attemp1st/Content/bin/Windows/bullet.xnb","TextureProcessor","Texture2DContent",619,341,1,3565662
+"C:/Users/я/source/repos/attemp1st/attemp1st/Content/CrewMateMASK.png","C:/Users/я/source/repos/attemp1st/attemp1st/Content/bin/Windows/CrewMateMASK.xnb","TextureProcessor","Texture2DContent",17723,4945,0,0498849
+"C:/Users/я/source/repos/attemp1st/attemp1st/Content/File.spritefont","C:/Users/я/source/repos/attemp1st/attemp1st/Content/bin/Windows/Arial.xnb","FontDescriptionProcessor","SpriteFontContent",2008,21538,0,6183156
+"C:/Users/я/source/repos/attemp1st/attemp1st/Content/MCRTile.png","C:/Users/я/source/repos/attemp1st/attemp1st/Content/bin/Windows/MCRTile.xnb","TextureProcessor","Texture2DContent",2289,3157,0,0401132
+"C:/Users/я/source/repos/attemp1st/attemp1st/Content/outline.fx","C:/Users/я/source/repos/attemp1st/attemp1st/Content/bin/Windows/outline.xnb","EffectProcessor","CompiledEffectContent",843,1275,31,39396
