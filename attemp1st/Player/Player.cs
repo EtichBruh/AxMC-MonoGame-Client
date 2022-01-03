@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 using MonoGame.Extended.Collisions;
+using attemp1st.Classes;
 
 namespace attemp1st.player
 {
@@ -13,7 +14,8 @@ namespace attemp1st.player
     {
 
         public Input Input;
-        public Bullet Bullet;
+        public Bullet PlayersBullet;
+        
         //public Player _player;
 
         //protected Texture2D playerTexture;
@@ -23,22 +25,23 @@ namespace attemp1st.player
         //private readonly float Speed = 2f;
         public float Velocity = 0f;
         private static int Frame = 0;
-        public Player(Texture2D texture)
+        public Player(Texture2D texture, Texture2D BulletTexture)
             : base(texture, 3, 5, Frame)
         {
             //Layer = 0;
+            Bullet.texture = BulletTexture;
             Width = 64;
             Height = Width;
         }
         public override void Update(GameTime gameTime, Camera camera, List<SpriteAtlas> spritesToAdd)
         {
             _keyBstate = Keyboard.GetState();
-            if (Position.Y + Origin.Y * Texture.Height <= 0)
+            if (Position.Y - Texture.Bounds.Center.Y <= 0)
             {
                 Position.Y -= Direction.Y;
                 return;
             }
-            if (Position.X - Origin.X <= 0)
+            if (Position.X - Texture.Width <= 0)
             {
                 Position.X -= Direction.X;
                 return;
@@ -63,7 +66,7 @@ namespace attemp1st.player
 
         private void AddBullet(List<SpriteAtlas> spritesToAdd, Camera cam)
         {
-            Bullet b = (Bullet)Bullet.Clone();
+            Bullet b = PlayersBullet.Clone() as Bullet;
             b.Position = Position;
             if (_spawnedBullets > 360) _spawnedBullets = 0;
             b.Direction.X += MathF.Cos(_spawnedBullets);
@@ -107,14 +110,18 @@ namespace attemp1st.player
                 Direction.Y = 1;
                 Position.Y += Direction.Y;
             }
-            if (Position.Y + Origin.Y * Texture.Height <= 0)
+
+            if (Position.Y - Texture.Bounds.Center.Y <= 0)
             {
-               Position.Y -= Direction.Y;
+                Position.Y -= Direction.Y;
+                //return;
             }
-            if (Position.X - Origin.X <= 0)
+          if(Position.X - Texture.Width <= 0)
             {
                 Position.X -= Direction.X;
+                //return;
             }
+
         }
         private void Rotate(Camera camera)
         {

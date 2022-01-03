@@ -18,6 +18,7 @@ namespace attemp1st.MapLogic
                     
                     tiles[y * map.GetLength(1) + x] = new Tile(number, x, y);
                 }
+            tiles = tiles.Where(tile => tile != null).ToArray();
         }
     }
 

@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace attemp1st.MapLogic
 {
-    public class TileData : SpriteAtlas
+    public class TileData : SpriteAtlasLite
     {
         public static Texture2D Tileset { get; set; }
 
@@ -20,8 +20,7 @@ namespace attemp1st.MapLogic
         public Tile(int id, float x, float y)
             : base(id)
         {
-            Position.X = x * Width + Origin.X;
-            Position.Y = y * Height + Origin.Y;
+            rect = new((int)x * Width, (int)y * Height, Width, Height);
             //Layer = 1;
         }
     }

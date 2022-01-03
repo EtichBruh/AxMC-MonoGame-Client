@@ -27,18 +27,14 @@ float4 MainPS(VertexShaderOutput input) : COLOR
 {
     float4 currentPixel = tex2D(InputSampler, input.UV) * input.Color;
 
-    if ((currentPixel.a == 0.0f))
-    {
-        uvPix = float2(1 / uvPix.x, 1 / uvPix.y);
-        if (saturate(ceil(
+    if ((currentPixel.a == 0.0f) && (saturate(ceil(
             tex2D(InputSampler, input.UV - uvPix).a +
             tex2D(InputSampler, float2(input.UV.x - uvPix.x, input.UV.y + uvPix.y)).a +
             tex2D(InputSampler, float2(input.UV.x + uvPix.x, input.UV.y - uvPix.y)).a +
             tex2D(InputSampler, input.UV + uvPix).a
-            )) == 1)
-        {
+            )) == 1))
+    {
             currentPixel = xOutlineColour;
-        }
     }
     return currentPixel;
 }

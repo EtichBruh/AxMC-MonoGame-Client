@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
-using System.Threading;
 
 namespace attemp1st.player
 {
@@ -12,10 +11,11 @@ namespace attemp1st.player
         public float LifeSpan = 5f;
         private readonly float _angleOffsetFromTexture = MathF.Atan(0.9f);
         public float LinearVelocity = 4f;//prob bullet speed lul
+        public static Texture2D texture { get; set; }
         float _totalSeconds;
 
 
-        public Bullet(Texture2D texture)
+        public Bullet()
             : base(texture, 1, 1, 0)
         {
             Width = 8 * 4;
@@ -39,7 +39,6 @@ namespace attemp1st.player
             if (LifeSpan <= 0)
             {
                 isRemoved = true;
-                
             }
             else
             {
@@ -56,13 +55,9 @@ namespace attemp1st.player
 
                 //Direction = LifeSpan <= 4.8f ? new(MathF.Cos(Rotation), MathF.Sin(Rotation)) : Direction;
                 //Position += Direction * linearVelocity;
-                
-                Position = LifeSpan <= 9.5f ? RotatePoint(parent.Origin, _totalSeconds, parent.Position): Position + Direction * LinearVelocity;
+
+                Position = LifeSpan <= 9.5f ? RotatePoint(parent.Origin, _totalSeconds, parent.Position) : Position + Direction * LinearVelocity;
             }
-
-
         }
-
-
     }
 }
