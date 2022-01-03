@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PipelineBuildEvent xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <SourceFile>C:/Users/я/source/repos/attemp1st/attemp1st/Content/CrewMateMASK.png</SourceFile>
+  <SourceFile>C:/Users/я/source/repos/attemp1st/nekoT pro client/attemp1st/Content/CrewMateMASK.png</SourceFile>
   <SourceTime>2021-08-03T19:28:23.7639135+03:00</SourceTime>
-  <DestFile>C:/Users/я/source/repos/attemp1st/attemp1st/Content/bin/Windows/Content/CrewMateMASK.xnb</DestFile>
-  <DestTime>2021-09-02T17:25:17.7670508+03:00</DestTime>
+  <DestFile>C:/Users/я/source/repos/attemp1st/nekoT pro client/attemp1st/Content/bin/Windows/Content/CrewMateMASK.xnb</DestFile>
+  <DestTime>2022-01-03T23:44:02.8922988+03:00</DestTime>
   <Importer>TextureImporter</Importer>
   <ImporterTime>2020-08-10T19:17:54+03:00</ImporterTime>
   <Processor>TextureProcessor</Processor>

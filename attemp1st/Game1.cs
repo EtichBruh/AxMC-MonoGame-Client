@@ -4,6 +4,7 @@ using attemp1st.player;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Nez;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -28,7 +29,7 @@ namespace attemp1st
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         private SpriteFont _arial;
-        private List<SpriteAtlas> _sprites;
+        private FastList<SpriteAtlas> _sprites;
         private List<SpriteAtlas> SpritesToAdd;
 
         public Tile[] Tiles;
@@ -193,7 +194,7 @@ namespace attemp1st
             if(SpritesToAdd.Count > 0) for (int i = 0; i < SpritesToAdd.Count; i++) { _sprites.Add(SpritesToAdd[i]); SpritesToAdd.RemoveAt(i); i--; }
             
             
-            for (int i = 0; i < _sprites.Count; i++)
+            for (int i = 0; i < _sprites.Length; i++)
             {
 
                 _sprites[i].Update(gameTime, _camera, SpritesToAdd);
@@ -223,7 +224,7 @@ namespace attemp1st
                     t.Draw(_spriteBatch);
                 }
             }
-            for(int i = 0; i < _sprites.Count; i++)
+            for(int i = 0; i < _sprites.Length; i++)
             {
                 _sprites[i].Draw(_spriteBatch);
             }

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
@@ -12,45 +14,53 @@ namespace attemp1st.Networking
     public class Connection
     {
 
-        public Connection() { } // Currently outdated + need to use tcp instead http + need rewrite all code, allow requesting images, json etc.. also streamD
-        public async Task Connect(Player _player)
+        //public Connection() { } 
+        public Socket Client;
+        public byte[] Buffer = new byte[256];
+        public void Connect(Player player)
         {
-
-            using (ClientWebSocket client = new())
+            Client = new(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            try
             {
-                Uri ServiceUri = new("ws://localhost:5000/send");
+                Client.Connect(IPAddress.Parse("127.0.0.1"), 2050);
+                if (Client.Connected)
+                    Console.WriteLine("connected!");
+               // byte[] bytes = new byte[256];
 
-                var cTc = new CancellationTokenSource();
-                cTc.CancelAfter(TimeSpan.FromSeconds(120));
-                try
+                /*while (Client.Connected)
                 {
-                    await client.ConnectAsync(ServiceUri, cTc.Token);
-                    while (client.State == WebSocketState.Open)
-                    {
-                        string message = new($"PlayerX {_player.Position.X}; PlayerY {_player.Position.Y}");
-                        if (!string.IsNullOrEmpty(message))
-                        {
-                            ArraySegment<byte> byteToSend = new(Encoding.UTF8.GetBytes(message));
-                            await client.SendAsync(byteToSend, WebSocketMessageType.Binary, true, cTc.Token);
-                            var responseBuffer = new byte[1024];
-                            var offset = 0;
-                            var packet = 1024;
-                            while (true)
-                            {
-                                ArraySegment<byte> byteReceived = new(responseBuffer, offset, packet);
-                                WebSocketReceiveResult responce = await client.ReceiveAsync(byteReceived, cTc.Token);
-                                var responseMessage = Encoding.UTF8.GetString(responseBuffer, offset, responce.Count);
-                                if (responce.EndOfMessage)
-                                    break;
-                            }
-                        }
-                    }
+                    byte[] msg = Encoding.UTF8.GetBytes( (player.Position.ToPoint()).ToString());
+
+                    // Send a message.
+                    Client.Send(msg, SocketFlags.None);
+                    Console.WriteLine("Sent: {0}", System.Text.Encoding.UTF8.GetString(msg));
+                    int i = Client.Receive(Buffer, SocketFlags.None);
+
+                    // Translate data bytes to a UTF8 string.
+                    string data = System.Text.Encoding.UTF8.GetString(Buffer, 0, i);
+                    Console.WriteLine("Received: {0}", data);
+
                 }
-                catch (WebSocketException wse)
-                {
-                    Console.WriteLine(wse.Message);
-                }
+                Client.Close();*/
             }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                Client.Close();
+            }
+        }//player.Position.ToPoint()).ToString()
+        public void Send(string Message)
+        {
+            byte[] msg = Encoding.UTF8.GetBytes(Message);
+
+            // Send a message.
+            Client.Send(msg, SocketFlags.None);
+            Console.WriteLine("Sent: {0}", System.Text.Encoding.UTF8.GetString(msg));
+        }
+        public string Receive()
+        {
+            int i = Client.Receive(Buffer, 0, Client.Available, SocketFlags.None);
+            return Encoding.UTF8.GetString(Buffer, 0, i);
         }
     }
 }
