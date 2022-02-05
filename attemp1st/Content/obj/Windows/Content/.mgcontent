@@ -4,11 +4,11 @@
   <Platform>Windows</Platform>
   <Config />
   <SourceFiles>
-    <File>C:/Users/я/source/repos/attemp1st/nekoT pro client/attemp1st/Content/bullet.png</File>
-    <File>C:/Users/я/source/repos/attemp1st/nekoT pro client/attemp1st/Content/CrewMateMASK.png</File>
-    <File>C:/Users/я/source/repos/attemp1st/nekoT pro client/attemp1st/Content/File.spritefont</File>
-    <File>C:/Users/я/source/repos/attemp1st/nekoT pro client/attemp1st/Content/MCRTile.png</File>
-    <File>C:/Users/я/source/repos/attemp1st/nekoT pro client/attemp1st/Content/outline.fx</File>
+    <File>C:/Users/User/source/repos/attemp1st/nekoT pro client/attemp1st/Content/bullet.png</File>
+    <File>C:/Users/User/source/repos/attemp1st/nekoT pro client/attemp1st/Content/CrewMateMASK.png</File>
+    <File>C:/Users/User/source/repos/attemp1st/nekoT pro client/attemp1st/Content/File.spritefont</File>
+    <File>C:/Users/User/source/repos/attemp1st/nekoT pro client/attemp1st/Content/MCRTile.png</File>
+    <File>C:/Users/User/source/repos/attemp1st/nekoT pro client/attemp1st/Content/outline.fx</File>
   </SourceFiles>
   <DestFiles>
     <File xsi:nil="true" />
